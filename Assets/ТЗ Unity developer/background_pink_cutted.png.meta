@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cf9721b6858aca44cb2b79be321f2b76
+guid: dd581e53426485347a408e2689534878
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -116,10 +116,10 @@ TextureImporter:
       name: background_pink_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 4000
-        height: 4000
+        x: 244
+        y: 217
+        width: 3605
+        height: 3596
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
