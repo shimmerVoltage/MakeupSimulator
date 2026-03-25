@@ -1305,9 +1305,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ae7e4aa89e93841bbee25573f3488a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  acneRemoveDuration: 2
-  faceTrigger: {fileID: 1568788420}
+  creamMoves: 3
+  acneRemoveDuration: 3
+  randomPositionOffset: 100
   acneImage: {fileID: 247475545}
+  faceTrigger: {fileID: 1568788420}
 --- !u!225 &1709996115
 CanvasGroup:
   m_ObjectHideFlags: 0
