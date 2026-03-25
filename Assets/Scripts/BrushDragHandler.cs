@@ -368,7 +368,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		StartCoroutine(BrushRotation());
 	}
 
-	private void DisableShadowObjects()
+	public void DisableShadowObjects()
 	{
 		foreach (GameObject shadow in eyeShadowsList)
 		{
