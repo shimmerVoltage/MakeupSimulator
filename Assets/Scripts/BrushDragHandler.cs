@@ -14,18 +14,17 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private float brushRotationOnButtonDegree;
 	[SerializeField] private float brushRotateTime;
 	[SerializeField] private float brushMoveToCenterTime;
-	[SerializeField] private float faceTriggerHandleOffset;
 	[SerializeField] private float paintAngleDegree;
 	[SerializeField] private float brushMoveToPaintTime;
 	[SerializeField] private float brushPaintRotation;
 	[SerializeField] private float brushPaintRotateTime;
 	[SerializeField] private float brushMoveToStartTime;
 	[SerializeField] private float shadowsFadeDuration;
-	[SerializeField] private Vector2 brushOnShadowButtonOffset;
 	[SerializeField] private Vector2 brushHandlePivot;
 	[SerializeField] private RectTransform brushCenterPosition;
 	[SerializeField] private RectTransform faceTrigger;
 	[SerializeField] private RectTransform paintPosition;
+	[SerializeField] private RectTransform triggerOffset;
 	[SerializeField] private List<GameObject> eyeShadowsList;
 	[SerializeField] private List<Transform> buttonTransformsList;
 
@@ -65,7 +64,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		if (!isPainted && isAvailableToHandle)
 		{
 			rectTransform.pivot = brushHandlePivot;
-			faceTrigger.position = new Vector2(faceTriggerDefaultPosition.x, faceTriggerDefaultPosition.y - faceTriggerHandleOffset);
+			faceTrigger.position = triggerOffset.position;
 		}
 	}
 
@@ -358,8 +357,6 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 		Vector2 startPosition = transform.position;
 		Vector2 targetPosition = buttonTransformsList[shadowIndex].position;
-
-		//targetPosition += brushOnShadowButtonOffset;
 
 		while (elapsed < brushMoveToButtonTime)
 		{

@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,7 +8,6 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private byte creamMoves;
 	[SerializeField] private byte creamRotations;
 	[SerializeField] private float acneRemoveDuration;
-	//[SerializeField] private float randomPositionOffset;
 	[SerializeField] private float creamRotationDegree;
 	[SerializeField] private Image acneImage;
 	[SerializeField] private RectTransform faceTrigger;
