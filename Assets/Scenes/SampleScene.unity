@@ -4173,8 +4173,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edd3acd14379f59488f26574f7c756eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  brushRotations: 2
   brushMoveToButtonTime: 2
   brushRotationDegree: 20
+  brushRotationOnButtonDegree: 3
+  brushRotateTime: 1
   brushOnShadowButtonOffset: {x: 220, y: -620}
   eyeShadowsList:
   - {fileID: 2085070223}

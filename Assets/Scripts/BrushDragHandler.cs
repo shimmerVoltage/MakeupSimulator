@@ -6,8 +6,11 @@ using UnityEngine.EventSystems;
 public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 
+	[SerializeField] private byte brushRotations;
 	[SerializeField] private float brushMoveToButtonTime;
 	[SerializeField] private float brushRotationDegree;
+	[SerializeField] private float brushRotationOnButtonDegree;
+	[SerializeField] private float brushRotateTime;
 	[SerializeField] private Vector2 brushOnShadowButtonOffset;
 	[SerializeField] private List<GameObject> eyeShadowsList;
 	[SerializeField] private List<Transform> buttonTransformsList;
@@ -44,13 +47,82 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		//}
 	}
 
+	private IEnumerator BrushRotation()
+	{
+		float elapsed = 0.0f;
+		float startAngle = transform.eulerAngles.z;
+
+		while (elapsed < brushRotateTime / 2)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / (brushRotateTime / 2);
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, startAngle + brushRotationOnButtonDegree / 2, smoothTime);
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+			yield return null;
+		}
+
+		startAngle = transform.eulerAngles.z;
+
+		for (int i = 0; i < brushRotations; i++)
+		{
+			elapsed = 0.0f;
+
+			while (elapsed < brushRotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (brushRotateTime / 2);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				float currentAngle = Mathf.Lerp(startAngle, startAngle - brushRotationOnButtonDegree, smoothTime);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+				yield return null;
+			}
+
+			elapsed = 0.0f;			
+			
+			while (elapsed < brushRotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (brushRotateTime / 2);
+			
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+			
+				float currentAngle = Mathf.Lerp(startAngle - brushRotationOnButtonDegree, startAngle, smoothTime);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
+			
+				yield return null;
+			}
+		}
+
+		elapsed = 0.0f;
+
+		while (elapsed < brushRotateTime / 2)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / (brushRotateTime / 2);
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, startAngle - brushRotationOnButtonDegree / 2, smoothTime);
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+			yield return null;
+		}
+	}
+
 	private IEnumerator BrushMoveToButton(int i)
 	{
 		float elapsed = 0.0f;
 
 		Vector2 startPosition = transform.position;
 		Vector2 targetPosition = buttonTransformsList[i].position;
-		
+
 		targetPosition += brushOnShadowButtonOffset;
 
 		while (elapsed < brushMoveToButtonTime)
@@ -62,23 +134,30 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			float currentAngle = Mathf.Lerp(0.0f, brushRotationDegree, smoothTime);
 			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
-			
+
 			transform.eulerAngles = new Vector3(0, 0, currentAngle);
 			transform.position = newPosition;
 
 			yield return null;
 		}
+
+		StartCoroutine(BrushRotation());
 	}
 
 	private void DisableShadowObjects()
 	{
-		foreach(GameObject shadow in eyeShadowsList)
+		foreach (GameObject shadow in eyeShadowsList)
 			shadow.SetActive(false);
+	}
+
+	private void BrushPreparation(int i)
+	{
+		StartCoroutine(BrushMoveToButton(i));
 	}
 
 	private void ShadowButtonCkicked(int i)
 	{
-		StartCoroutine(BrushMoveToButton(i));
+		BrushPreparation(i);
 
 		//DisableShadowObjects();
 		//eyeShadowsList[i].SetActive(true);
@@ -121,11 +200,11 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		ShadowButtonCkicked(8);
 	}
 
-	
 
-	
 
-	
 
-	
+
+
+
+
 }
