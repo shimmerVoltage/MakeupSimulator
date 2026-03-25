@@ -4173,6 +4173,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edd3acd14379f59488f26574f7c756eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  brushMoveToButtonTime: 2
+  brushRotationDegree: 20
+  brushOnShadowButtonOffset: {x: 100, y: -300}
   eyeShadowsList:
   - {fileID: 2085070223}
   - {fileID: 704941150}
@@ -4183,6 +4186,16 @@ MonoBehaviour:
   - {fileID: 915078904}
   - {fileID: 1600756624}
   - {fileID: 955387118}
+  buttonTransformsList:
+  - {fileID: 1164933805}
+  - {fileID: 1012327812}
+  - {fileID: 1098734024}
+  - {fileID: 784292560}
+  - {fileID: 1145549054}
+  - {fileID: 1208400410}
+  - {fileID: 2071104501}
+  - {fileID: 1804611675}
+  - {fileID: 1211666107}
 --- !u!1 &1390130365
 GameObject:
   m_ObjectHideFlags: 0
