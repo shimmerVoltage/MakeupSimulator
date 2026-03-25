@@ -4337,6 +4337,7 @@ MonoBehaviour:
   brushMoveToPaintTime: 1
   brushPaintRotation: 30
   brushPaintRotateTime: 0.3
+  brushMoveToStartTime: 2
   brushOnShadowButtonOffset: {x: 220, y: -620}
   brushHandlePivot: {x: 0.5, y: 0.4}
   brushCenterPosition: {fileID: 1315040185}

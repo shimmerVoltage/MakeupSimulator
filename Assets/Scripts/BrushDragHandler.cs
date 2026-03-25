@@ -18,6 +18,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private float brushMoveToPaintTime;
 	[SerializeField] private float brushPaintRotation;
 	[SerializeField] private float brushPaintRotateTime;
+	[SerializeField] private float brushMoveToStartTime;
 	[SerializeField] private Vector2 brushOnShadowButtonOffset;
 	[SerializeField] private Vector2 brushHandlePivot;
 	[SerializeField] private RectTransform brushCenterPosition;
@@ -31,8 +32,8 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	private string faceTriggerName;
 	private Vector2 defaulPivot;
 	private Vector2 faceTriggerDefaultPosition;
+	private Vector2 startPosition;
 	private RectTransform rectTransform;
-	//private Vector2 startPosition;
 
 
 	private void Awake()
@@ -41,13 +42,14 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		faceTriggerDefaultPosition = faceTrigger.position;
 		faceTriggerName = faceTrigger.name;
 		rectTransform = GetComponent<RectTransform>();
+		startPosition = transform.position;
 
 		defaulPivot = rectTransform.pivot;
 	}
 
 	private void Start()
 	{
-		//startPosition = transform.position;
+
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
@@ -81,6 +83,31 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			}
 		}
 	}
+
+	private IEnumerator BrushMoveToStart()
+	{
+		float elapsed = 0.0f;
+		float startAngle = transform.eulerAngles.z;
+		Vector2 startPosition = transform.position;
+		Vector2 targetPosition = this.startPosition;
+
+		while (elapsed < brushMoveToStartTime)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / brushMoveToStartTime;
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, 0.0f, smoothTime);
+			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
+
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+			transform.position = newPosition;
+
+			yield return null;
+		}
+	}
+
 	private IEnumerator BrushPaint()
 	{
 		float elapsed = 0.0f;
@@ -148,6 +175,8 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			yield return null;
 		}
+
+		StartCoroutine(BrushMoveToStart());
 	}
 
 	private IEnumerator BrushMoveToPaint()
