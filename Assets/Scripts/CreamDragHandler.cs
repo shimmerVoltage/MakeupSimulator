@@ -4,14 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-	CanvasGroup canvasGroup;
-
 	[SerializeField] private byte creamMoves;
 	[SerializeField] private byte creamRotations;
 	[SerializeField] private float acneRemoveDuration;
-	[SerializeField] private float randomPositionOffset;
+	//[SerializeField] private float randomPositionOffset;
 	[SerializeField] private float creamRotationDegree;
 	[SerializeField] private Image acneImage;
 	[SerializeField] private RectTransform faceTrigger;
@@ -23,8 +21,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		faceTriggerName = faceTrigger.name;
 		startPosition = transform.position;
-		canvasGroup = GetComponent<CanvasGroup>();
-
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
