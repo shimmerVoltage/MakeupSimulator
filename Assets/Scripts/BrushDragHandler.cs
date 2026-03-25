@@ -7,20 +7,27 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 {
 
 	[SerializeField] private byte brushRotations;
+	[SerializeField] private byte brushPaintRotations;
 	[SerializeField] private float brushMoveToButtonTime;
 	[SerializeField] private float brushRotationDegree;
 	[SerializeField] private float brushRotationOnButtonDegree;
 	[SerializeField] private float brushRotateTime;
 	[SerializeField] private float brushMoveToCenterTime;
 	[SerializeField] private float faceTriggerHandleOffset;
+	[SerializeField] private float paintAngleDegree;
+	[SerializeField] private float brushMoveToPaintTime;
+	[SerializeField] private float brushPaintRotation;
+	[SerializeField] private float brushPaintRotateTime;
 	[SerializeField] private Vector2 brushOnShadowButtonOffset;
 	[SerializeField] private Vector2 brushHandlePivot;
 	[SerializeField] private RectTransform brushCenterPosition;
 	[SerializeField] private RectTransform faceTrigger;
+	[SerializeField] private RectTransform paintPosition;
 	[SerializeField] private List<GameObject> eyeShadowsList;
 	[SerializeField] private List<Transform> buttonTransformsList;
 
 	private bool isPrepared;
+	private int shadowIndex;
 	private string faceTriggerName;
 	private Vector2 defaulPivot;
 	private Vector2 faceTriggerDefaultPosition;
@@ -56,21 +63,123 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		rectTransform.pivot = defaulPivot;
+		//rectTransform.pivot = defaulPivot;
 		faceTrigger.position = faceTriggerDefaultPosition;
 
+		//Debug.Log("faceTriggerName = " + faceTriggerName);
+		//Debug.Log("eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name = " + eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name);
+
 		if (isPrepared)
+		{
 			if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
 			{
-			
+				StartCoroutine(BrushMoveToPaint());
 			}
 			else
 			{
 				transform.position = brushCenterPosition.position;
 			}
+		}
+	}
+	private IEnumerator BrushPaint()
+	{
+		float elapsed = 0.0f;
+		float startAngle = transform.eulerAngles.z;
+
+		while (elapsed < brushPaintRotateTime / 2)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / (brushPaintRotateTime / 2);
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, startAngle + brushPaintRotation / 2, smoothTime);
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+			yield return null;
+		}
+
+		startAngle = transform.eulerAngles.z;
+
+		for (int i = 0; i < brushPaintRotations; i++)
+		{
+			elapsed = 0.0f;
+
+			while (elapsed < brushPaintRotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (brushPaintRotateTime / 2);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				float currentAngle = Mathf.Lerp(startAngle, startAngle - brushPaintRotation, smoothTime);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+				yield return null;
+			}
+
+			elapsed = 0.0f;
+
+			while (elapsed < brushPaintRotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (brushPaintRotateTime / 2);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				float currentAngle = Mathf.Lerp(startAngle - brushPaintRotation, startAngle, smoothTime);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+				yield return null;
+			}
+		}
+
+		elapsed = 0.0f;
+
+		while (elapsed < brushPaintRotateTime / 2)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / (brushPaintRotateTime / 2);
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, startAngle - brushPaintRotation / 2, smoothTime);
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+			yield return null;
+		}
 	}
 
-	private IEnumerator BrushMoveToCenter(int index)
+	private IEnumerator BrushMoveToPaint()
+	{
+		float elapsed = 0.0f;
+
+		Vector2 startPosition = transform.position;
+		Vector2 targetPosition = paintPosition.position;
+		Vector2 startPivot = rectTransform.pivot;
+
+		while (elapsed < brushMoveToPaintTime)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / brushMoveToPaintTime;
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(0.0f, paintAngleDegree, smoothTime);
+			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
+			Vector2 newPivot = Vector2.Lerp(startPivot, defaulPivot, smoothTime);
+
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+			transform.position = newPosition;
+			rectTransform.pivot = newPivot;	
+
+			yield return null;
+		}
+
+		StartCoroutine(BrushPaint());
+	}
+
+	private IEnumerator BrushMoveToCenter()
 	{
 		float elapsed = 0.0f;
 		float startAngle = transform.eulerAngles.z;
@@ -92,12 +201,11 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			yield return null;
 		}
-
 		
 		isPrepared = true;
 	}
 
-	private IEnumerator BrushRotation(int index)
+	private IEnumerator BrushRotation()
 	{
 		float elapsed = 0.0f;
 		float startAngle = transform.eulerAngles.z;
@@ -165,15 +273,15 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			yield return null;
 		}
 
-		StartCoroutine(BrushMoveToCenter(index));
+		StartCoroutine(BrushMoveToCenter());
 	}
 
-	private IEnumerator BrushMoveToButton(int index)
+	private IEnumerator BrushMoveToButton()
 	{
 		float elapsed = 0.0f;
 
 		Vector2 startPosition = transform.position;
-		Vector2 targetPosition = buttonTransformsList[index].position;
+		Vector2 targetPosition = buttonTransformsList[shadowIndex].position;
 
 		targetPosition += brushOnShadowButtonOffset;
 
@@ -193,7 +301,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			yield return null;
 		}
 
-		StartCoroutine(BrushRotation(index));
+		StartCoroutine(BrushRotation());
 	}
 
 	private void DisableShadowObjects()
@@ -202,14 +310,15 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			shadow.SetActive(false);
 	}
 
-	private void BrushPreparation(int index)
+	private void BrushPreparation()
 	{
-		StartCoroutine(BrushMoveToButton(index));
+		StartCoroutine(BrushMoveToButton());
 	}
 
 	private void ShadowButtonCkicked(int index)
 	{
-		BrushPreparation(index);
+		shadowIndex = index;
+		BrushPreparation();
 		DisableShadowObjects();
 		//eyeShadowsList[index].SetActive(true);
 	}
