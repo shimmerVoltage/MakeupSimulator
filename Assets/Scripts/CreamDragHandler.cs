@@ -14,13 +14,20 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private Image acneImage;
 	[SerializeField] private RectTransform faceTrigger;
 
+	private bool isAcned;
 	private string faceTriggerName;
 	private Vector2 startPosition;
 
-	private void Start()
+	private void Awake()
 	{
+		isAcned = true;
 		faceTriggerName = faceTrigger.name;
 		startPosition = transform.position;
+	}
+
+	private void Start()
+	{
+
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
@@ -30,21 +37,23 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		transform.position = eventData.position;
+		if (isAcned)
+			transform.position = eventData.position;
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
-		{
-			StartCoroutine(AcneFadeOut());
-			StartCoroutine(CreamMove());
-			StartCoroutine(CreamRotation());
-		}
-		else
-		{
-			transform.position = startPosition;
-		}
+		if (isAcned)
+			if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
+			{
+				StartCoroutine(AcneFadeOut());
+				StartCoroutine(CreamMove());
+				StartCoroutine(CreamRotation());
+			}
+			else
+			{
+				transform.position = startPosition;
+			}
 	}
 
 	private IEnumerator AcneFadeOut()
@@ -66,6 +75,8 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			yield return null;
 		}
+
+		isAcned = false;
 	}
 
 	private IEnumerator CreamMove()

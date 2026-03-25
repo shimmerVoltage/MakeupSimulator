@@ -30,6 +30,9 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private List<Transform> buttonTransformsList;
 
 	private bool isPrepared;
+	private bool isPainted;
+	private bool isAvailableToHandle;
+	private bool isAvailableToClear;
 	private int shadowIndex;
 	private string faceTriggerName;
 	private Vector2 defaulPivot;
@@ -41,6 +44,9 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	private void Awake()
 	{
 		isPrepared = false;
+		isPainted = false;
+		isAvailableToHandle = false;
+		isAvailableToClear = true;
 		faceTriggerDefaultPosition = faceTrigger.position;
 		faceTriggerName = faceTrigger.name;
 		rectTransform = GetComponent<RectTransform>();
@@ -56,38 +62,39 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		rectTransform.pivot = brushHandlePivot;
-		faceTrigger.position = new Vector2(faceTriggerDefaultPosition.x, faceTriggerDefaultPosition.y - faceTriggerHandleOffset);
+		if (!isPainted && isAvailableToHandle)
+		{
+			rectTransform.pivot = brushHandlePivot;
+			faceTrigger.position = new Vector2(faceTriggerDefaultPosition.x, faceTriggerDefaultPosition.y - faceTriggerHandleOffset);
+		}
 	}
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		transform.position = eventData.position;
+		if (!isPainted && isAvailableToHandle)
+			transform.position = eventData.position;
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		//rectTransform.pivot = defaulPivot;
-		faceTrigger.position = faceTriggerDefaultPosition;
-
-		//Debug.Log("faceTriggerName = " + faceTriggerName);
-		//Debug.Log("eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name = " + eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name);
-
-		if (isPrepared)
+		if (!isPainted && isAvailableToHandle)
 		{
-			if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
-			{
-				StartCoroutine(BrushMoveToPaint());
-			}
-			else
-			{
-				transform.position = brushCenterPosition.position;
-			}
+			faceTrigger.position = faceTriggerDefaultPosition;
+
+			if (isPrepared)
+				if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
+				{
+					isAvailableToHandle = false;
+					StartCoroutine(BrushMoveToPaint());
+				}
+				else
+					transform.position = brushCenterPosition.position;
 		}
 	}
 
 	private IEnumerator ShadowsFadeIn()
 	{
+		isPainted = true;
 		float elapsed = 0.0f;
 
 		while (elapsed < shadowsFadeDuration)
@@ -99,22 +106,26 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			Image leftShadow = eyeShadowsList[shadowIndex].transform.Find("Left").GetComponent<Image>();
 			Image rightShadow = eyeShadowsList[shadowIndex].transform.Find("Right").GetComponent<Image>();
 
-			leftShadow.color = new Color(
-				leftShadow.color.r,
-				leftShadow.color.g,
-				leftShadow.color.b,
-				newAlpha
-			);
+			leftShadow.color = new Color
+				(
+					leftShadow.color.r,
+					leftShadow.color.g,
+					leftShadow.color.b,
+					newAlpha
+				);
 
-			rightShadow.color = new Color(
-				rightShadow.color.r,
-				rightShadow.color.g,
-				rightShadow.color.b,
-				newAlpha
-			);
+			rightShadow.color = new Color
+				(
+					rightShadow.color.r,
+					rightShadow.color.g,
+					rightShadow.color.b,
+					newAlpha
+				);
 
 			yield return null;
 		}
+
+		isAvailableToClear = true;
 	}
 
 	private IEnumerator BrushMoveToStart()
@@ -235,7 +246,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			transform.eulerAngles = new Vector3(0, 0, currentAngle);
 			transform.position = newPosition;
-			rectTransform.pivot = newPivot;	
+			rectTransform.pivot = newPivot;
 
 			yield return null;
 		}
@@ -265,8 +276,9 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			yield return null;
 		}
-		
+
 		isPrepared = true;
+		isAvailableToHandle = true;
 	}
 
 	private IEnumerator BrushRotation()
@@ -306,18 +318,18 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 				yield return null;
 			}
 
-			elapsed = 0.0f;			
-			
+			elapsed = 0.0f;
+
 			while (elapsed < brushRotateTime / 2)
 			{
 				elapsed += Time.deltaTime;
 				float time = elapsed / (brushRotateTime / 2);
-			
+
 				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
-			
+
 				float currentAngle = Mathf.Lerp(startAngle - brushRotationOnButtonDegree, startAngle, smoothTime);
 				transform.eulerAngles = new Vector3(0, 0, currentAngle);
-			
+
 				yield return null;
 			}
 		}
@@ -370,26 +382,33 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void DisableShadowObjects()
 	{
-		foreach (GameObject shadow in eyeShadowsList)
+		if (isAvailableToClear)
 		{
-			Image leftShadow = shadow.transform.Find("Left").GetComponent<Image>();
-			Image rightShadow = shadow.transform.Find("Right").GetComponent<Image>();
+			foreach (GameObject shadow in eyeShadowsList)
+			{
+				Image leftShadow = shadow.transform.Find("Left").GetComponent<Image>();
+				Image rightShadow = shadow.transform.Find("Right").GetComponent<Image>();
 
-			leftShadow.color = new Color(
-				leftShadow.color.r,
-				leftShadow.color.g,
-				leftShadow.color.b,
-				0.0f
-			);
+				leftShadow.color = new Color
+					(
+						leftShadow.color.r,
+						leftShadow.color.g,
+						leftShadow.color.b,
+						0.0f
+					);
 
-			rightShadow.color = new Color(
-				rightShadow.color.r,
-				rightShadow.color.g,
-				rightShadow.color.b,
-				0.0f
-			);
+				rightShadow.color = new Color
+					(
+						rightShadow.color.r,
+						rightShadow.color.g,
+						rightShadow.color.b,
+						0.0f
+					);
 
-			shadow.SetActive(false);
+				shadow.SetActive(false);
+			}
+
+			isPainted = false;
 		}
 	}
 
@@ -403,6 +422,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		shadowIndex = index;
 		BrushPreparation();
 		DisableShadowObjects();
+		isAvailableToClear = false;
 		eyeShadowsList[index].SetActive(true);
 	}
 
