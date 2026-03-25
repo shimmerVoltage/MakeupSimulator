@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 56999d69bbab1cc45b5f7b716707a72c
+guid: 9597fdb2e2a1d1447b496a38cfe8ae2e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5795814407860715475
-    second: shelf_0
+      213: 627470728437801558
+    second: smal_diamond_icon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: shelf_0
+      name: smal_diamond_icon_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 305
-        height: 74
+        width: 109
+        height: 116
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 40, y: 8, z: 8, w: 8}
+      border: {x: 54, y: 0, z: 54, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3dff0a41f7ede6050800000000000000
-      internalID: 5795814407860715475
+      spriteID: 652ad739d4935b800800000000000000
+      internalID: 627470728437801558
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e343b21840684f54d8b2ed741ed27b13
+    spriteID: 8d7429343a550d34486bb68191e50d6e
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      shelf_0: 5795814407860715475
+      smal_diamond_icon_0: 627470728437801558
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
