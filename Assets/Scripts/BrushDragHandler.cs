@@ -11,23 +11,42 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private float brushRotationDegree;
 	[SerializeField] private float brushRotationOnButtonDegree;
 	[SerializeField] private float brushRotateTime;
+	[SerializeField] private float brushMoveToCenterTime;
+	[SerializeField] private float faceTriggerHandleOffset;
 	[SerializeField] private Vector2 brushOnShadowButtonOffset;
+	[SerializeField] private Vector2 brushHandlePivot;
+	[SerializeField] private RectTransform brushCenterPosition;
+	[SerializeField] private RectTransform faceTrigger;
 	[SerializeField] private List<GameObject> eyeShadowsList;
 	[SerializeField] private List<Transform> buttonTransformsList;
-	//[SerializeField] private RectTransform faceTrigger;
 
-	//private string faceTriggerName;
+	private bool isPrepared;
+	private string faceTriggerName;
+	private Vector2 defaulPivot;
+	private Vector2 faceTriggerDefaultPosition;
+	private RectTransform rectTransform;
 	//private Vector2 startPosition;
+
+
+	private void Awake()
+	{
+		isPrepared = false;
+		faceTriggerDefaultPosition = faceTrigger.position;
+		faceTriggerName = faceTrigger.name;
+		rectTransform = GetComponent<RectTransform>();
+
+		defaulPivot = rectTransform.pivot;
+	}
 
 	private void Start()
 	{
-		//faceTriggerName = faceTrigger.name;
 		//startPosition = transform.position;
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		Debug.Log("OnBeginDrag");
+		rectTransform.pivot = brushHandlePivot;
+		faceTrigger.position = new Vector2(faceTriggerDefaultPosition.x, faceTriggerDefaultPosition.y - faceTriggerHandleOffset);
 	}
 
 	public void OnDrag(PointerEventData eventData)
@@ -37,17 +56,48 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		//if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
-		//{
-		//
-		//}
-		//else
-		//{
-		//	transform.position = startPosition;
-		//}
+		rectTransform.pivot = defaulPivot;
+		faceTrigger.position = faceTriggerDefaultPosition;
+
+		if (isPrepared)
+			if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
+			{
+			
+			}
+			else
+			{
+				transform.position = brushCenterPosition.position;
+			}
 	}
 
-	private IEnumerator BrushRotation()
+	private IEnumerator BrushMoveToCenter(int index)
+	{
+		float elapsed = 0.0f;
+		float startAngle = transform.eulerAngles.z;
+		Vector2 startPosition = transform.position;
+		Vector2 targetPosition = brushCenterPosition.position;
+
+		while (elapsed < brushMoveToCenterTime)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / brushMoveToCenterTime;
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(startAngle, 0.0f, smoothTime);
+			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
+
+			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+			transform.position = newPosition;
+
+			yield return null;
+		}
+
+		
+		isPrepared = true;
+	}
+
+	private IEnumerator BrushRotation(int index)
 	{
 		float elapsed = 0.0f;
 		float startAngle = transform.eulerAngles.z;
@@ -114,14 +164,16 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 			yield return null;
 		}
+
+		StartCoroutine(BrushMoveToCenter(index));
 	}
 
-	private IEnumerator BrushMoveToButton(int i)
+	private IEnumerator BrushMoveToButton(int index)
 	{
 		float elapsed = 0.0f;
 
 		Vector2 startPosition = transform.position;
-		Vector2 targetPosition = buttonTransformsList[i].position;
+		Vector2 targetPosition = buttonTransformsList[index].position;
 
 		targetPosition += brushOnShadowButtonOffset;
 
@@ -141,7 +193,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			yield return null;
 		}
 
-		StartCoroutine(BrushRotation());
+		StartCoroutine(BrushRotation(index));
 	}
 
 	private void DisableShadowObjects()
@@ -150,17 +202,16 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			shadow.SetActive(false);
 	}
 
-	private void BrushPreparation(int i)
+	private void BrushPreparation(int index)
 	{
-		StartCoroutine(BrushMoveToButton(i));
+		StartCoroutine(BrushMoveToButton(index));
 	}
 
-	private void ShadowButtonCkicked(int i)
+	private void ShadowButtonCkicked(int index)
 	{
-		BrushPreparation(i);
-
-		//DisableShadowObjects();
-		//eyeShadowsList[i].SetActive(true);
+		BrushPreparation(index);
+		DisableShadowObjects();
+		//eyeShadowsList[index].SetActive(true);
 	}
 
 	public void Shadow_01()
