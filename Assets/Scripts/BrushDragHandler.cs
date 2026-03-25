@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -19,6 +20,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	[SerializeField] private float brushPaintRotation;
 	[SerializeField] private float brushPaintRotateTime;
 	[SerializeField] private float brushMoveToStartTime;
+	[SerializeField] private float shadowsFadeDuration;
 	[SerializeField] private Vector2 brushOnShadowButtonOffset;
 	[SerializeField] private Vector2 brushHandlePivot;
 	[SerializeField] private RectTransform brushCenterPosition;
@@ -84,6 +86,37 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		}
 	}
 
+	private IEnumerator ShadowsFadeIn()
+	{
+		float elapsed = 0.0f;
+
+		while (elapsed < shadowsFadeDuration)
+		{
+			elapsed += Time.deltaTime;
+			float time = elapsed / shadowsFadeDuration;
+			float newAlpha = Mathf.Lerp(0.0f, 1.0f, time);
+
+			Image leftShadow = eyeShadowsList[shadowIndex].transform.Find("Left").GetComponent<Image>();
+			Image rightShadow = eyeShadowsList[shadowIndex].transform.Find("Right").GetComponent<Image>();
+
+			leftShadow.color = new Color(
+				leftShadow.color.r,
+				leftShadow.color.g,
+				leftShadow.color.b,
+				newAlpha
+			);
+
+			rightShadow.color = new Color(
+				rightShadow.color.r,
+				rightShadow.color.g,
+				rightShadow.color.b,
+				newAlpha
+			);
+
+			yield return null;
+		}
+	}
+
 	private IEnumerator BrushMoveToStart()
 	{
 		float elapsed = 0.0f;
@@ -110,6 +143,8 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
 	private IEnumerator BrushPaint()
 	{
+		StartCoroutine(ShadowsFadeIn());
+
 		float elapsed = 0.0f;
 		float startAngle = transform.eulerAngles.z;
 
@@ -336,7 +371,26 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	private void DisableShadowObjects()
 	{
 		foreach (GameObject shadow in eyeShadowsList)
+		{
+			Image leftShadow = shadow.transform.Find("Left").GetComponent<Image>();
+			Image rightShadow = shadow.transform.Find("Right").GetComponent<Image>();
+
+			leftShadow.color = new Color(
+				leftShadow.color.r,
+				leftShadow.color.g,
+				leftShadow.color.b,
+				0.0f
+			);
+
+			rightShadow.color = new Color(
+				rightShadow.color.r,
+				rightShadow.color.g,
+				rightShadow.color.b,
+				0.0f
+			);
+
 			shadow.SetActive(false);
+		}
 	}
 
 	private void BrushPreparation()
@@ -349,7 +403,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		shadowIndex = index;
 		BrushPreparation();
 		DisableShadowObjects();
-		//eyeShadowsList[index].SetActive(true);
+		eyeShadowsList[index].SetActive(true);
 	}
 
 	public void Shadow_01()
@@ -388,12 +442,5 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 	{
 		ShadowButtonCkicked(8);
 	}
-
-
-
-
-
-
-
 
 }
