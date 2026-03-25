@@ -359,7 +359,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		Vector2 startPosition = transform.position;
 		Vector2 targetPosition = buttonTransformsList[shadowIndex].position;
 
-		targetPosition += brushOnShadowButtonOffset;
+		//targetPosition += brushOnShadowButtonOffset;
 
 		while (elapsed < brushMoveToButtonTime)
 		{
@@ -371,7 +371,7 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			float currentAngle = Mathf.Lerp(0.0f, brushRotationDegree, smoothTime);
 			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
 
-			transform.eulerAngles = new Vector3(0, 0, currentAngle);
+			transform.eulerAngles = new Vector3(0.0f, 0.0f, currentAngle);
 			transform.position = newPosition;
 
 			yield return null;
