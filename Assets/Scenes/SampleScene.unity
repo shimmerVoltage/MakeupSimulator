@@ -1306,8 +1306,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   creamMoves: 3
+  creamRotations: 4
   acneRemoveDuration: 3
   randomPositionOffset: 100
+  creamRotationDegree: 30
   acneImage: {fileID: 247475545}
   faceTrigger: {fileID: 1568788420}
 --- !u!225 &1709996115

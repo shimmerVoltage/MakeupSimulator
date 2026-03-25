@@ -1,62 +1,52 @@
 using System.Collections;
-using System.Xml.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 	CanvasGroup canvasGroup;
 
 	[SerializeField] private byte creamMoves;
+	[SerializeField] private byte creamRotations;
 	[SerializeField] private float acneRemoveDuration;
 	[SerializeField] private float randomPositionOffset;
+	[SerializeField] private float creamRotationDegree;
 	[SerializeField] private Image acneImage;
 	[SerializeField] private RectTransform faceTrigger;
 
 	private string faceTriggerName;
 	private Vector2 startPosition;
-	//private RectTransform faceTriggerRectTransform;
 
 	private void Start()
 	{
 		faceTriggerName = faceTrigger.name;
 		startPosition = transform.position;
 		canvasGroup = GetComponent<CanvasGroup>();
-		
+
 	}
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		//throw new System.NotImplementedException();
 		Debug.Log("OnBeginDrag");
 	}
 
 	public void OnDrag(PointerEventData eventData)
 	{
-		//throw new System.NotImplementedException();
 		transform.position = eventData.position;
-		//Debug.Log("OnDrag");
 	}
 
 	public void OnEndDrag(PointerEventData eventData)
 	{
-		//throw new System.NotImplementedException();
-		//Debug.Log("OnEndDrag");
-		//Debug.Log("eventData.pointerEnter?.GetComponent<Transform>().name = " + eventData.pointerEnter?.GetComponent<Transform>().name);
-
 		if (eventData.pointerEnter?.GetComponent<UnityEngine.Transform>().name == faceTriggerName)
 		{
-			Debug.Log("true");
-			//acneObject.GetComponent<Image>().color = Color.blue;
-			//acneImage.color = Color.blue;
 			StartCoroutine(AcneFadeOut());
-			StartCoroutine(CreamAmination());
+			StartCoroutine(CreamMove());
+			StartCoroutine(CreamRotation());
 		}
 		else
 		{
-			Debug.Log("false");
 			transform.position = startPosition;
 		}
 	}
@@ -82,7 +72,7 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		}
 	}
 
-	private IEnumerator CreamAmination()
+	private IEnumerator CreamMove()
 	{
 		for (int i = 0; i <= creamMoves; i++)
 		{
@@ -97,13 +87,13 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 					(
 						Random.Range
 							(
-								faceTrigger.position.x - faceTrigger.rect.width / 2,
-								faceTrigger.position.x + faceTrigger.rect.width / 2
+								faceTrigger.position.x - faceTrigger.rect.width / 4,
+								faceTrigger.position.x + faceTrigger.rect.width / 4
 							),
 						Random.Range
 							(
-								faceTrigger.position.y - faceTrigger.rect.height / 2,
-								faceTrigger.position.y + faceTrigger.rect.height / 2
+								faceTrigger.position.y - faceTrigger.rect.height / 4,
+								faceTrigger.position.y + faceTrigger.rect.height / 4
 							)
 					);
 			}
@@ -118,6 +108,38 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 				float time = elapsed / (acneRemoveDuration / creamMoves);
 				Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, time);
 				transform.position = newPosition;
+
+				yield return null;
+			}
+		}
+	}
+
+	private IEnumerator CreamRotation()
+	{
+		float rotateTime = acneRemoveDuration / creamRotations;
+
+		for (int i = 0; i < creamRotations; i++)
+		{
+			float elapsed = 0.0f;
+
+			while (elapsed < rotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (rotateTime / 2);
+				float currentAngle = Mathf.Lerp(0.0f, -creamRotationDegree, time);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
+
+				yield return null;
+			}
+
+			elapsed = 0.0f;
+
+			while (elapsed < rotateTime / 2)
+			{
+				elapsed += Time.deltaTime;
+				float time = elapsed / (rotateTime / 2);
+				float currentAngle = Mathf.Lerp(-creamRotationDegree, 0.0f, time);
+				transform.eulerAngles = new Vector3(0, 0, currentAngle);
 
 				yield return null;
 			}
