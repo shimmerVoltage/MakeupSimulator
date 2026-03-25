@@ -102,7 +102,10 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			{
 				elapsed += Time.deltaTime;
 				float time = elapsed / (acneRemoveDuration / creamMoves);
-				Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, time);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
 				transform.position = newPosition;
 
 				yield return null;
@@ -122,7 +125,10 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			{
 				elapsed += Time.deltaTime;
 				float time = elapsed / (rotateTime / 2);
-				float currentAngle = Mathf.Lerp(0.0f, -creamRotationDegree, time);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				float currentAngle = Mathf.Lerp(0.0f, -creamRotationDegree, smoothTime);
 				transform.eulerAngles = new Vector3(0, 0, currentAngle);
 
 				yield return null;
@@ -134,7 +140,10 @@ public class CreamDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 			{
 				elapsed += Time.deltaTime;
 				float time = elapsed / (rotateTime / 2);
-				float currentAngle = Mathf.Lerp(-creamRotationDegree, 0.0f, time);
+
+				float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+				float currentAngle = Mathf.Lerp(-creamRotationDegree, 0.0f, smoothTime);
 				transform.eulerAngles = new Vector3(0, 0, currentAngle);
 
 				yield return null;

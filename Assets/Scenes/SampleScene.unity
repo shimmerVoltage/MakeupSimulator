@@ -4099,18 +4099,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1384917370}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.008726558, w: 0.999962}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1026634196}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 1}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 339, y: -496}
+  m_AnchoredPosition: {x: 347.0821, y: -836.452}
   m_SizeDelta: {x: 88, y: 681}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1384917372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4175,7 +4175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   brushMoveToButtonTime: 2
   brushRotationDegree: 20
-  brushOnShadowButtonOffset: {x: 100, y: -300}
+  brushOnShadowButtonOffset: {x: 220, y: -620}
   eyeShadowsList:
   - {fileID: 2085070223}
   - {fileID: 704941150}

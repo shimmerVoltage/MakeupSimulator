@@ -57,8 +57,11 @@ public class BrushDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 		{
 			elapsed += Time.deltaTime;
 			float time = elapsed / brushMoveToButtonTime;
-			float currentAngle = Mathf.Lerp(0.0f, brushRotationDegree, time);
-			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, time);
+
+			float smoothTime = Mathf.SmoothStep(0f, 1f, time);
+
+			float currentAngle = Mathf.Lerp(0.0f, brushRotationDegree, smoothTime);
+			Vector2 newPosition = Vector2.Lerp(startPosition, targetPosition, smoothTime);
 			
 			transform.eulerAngles = new Vector3(0, 0, currentAngle);
 			transform.position = newPosition;
